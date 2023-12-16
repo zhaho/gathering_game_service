@@ -1,9 +1,9 @@
 FROM python:3.9-slim
 
-WORKDIR /code
+WORKDIR /app
 
 COPY ./requirements.txt ./
-run pip install xmltodict
+RUN pip install xmltodict
 RUN pip install --no-cache-dir -r requirements.txt
 
 COPY ./src ./src

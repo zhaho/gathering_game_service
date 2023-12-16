@@ -1,9 +1,9 @@
 version: "3"
 
 services:
-  app:
+  game:
     build: .
-    container_name: python-server
+    container_name: gathering_container
     command: python src/main.py
     volumes:
       - .:/code
