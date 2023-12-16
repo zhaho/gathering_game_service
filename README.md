@@ -1,1 +1,2 @@
-# gathering_game_service
+# Gathering Game Service
+This service keeps all the games updated with data.
