@@ -1,16 +1,18 @@
-import xmltodict, json, requests, time, logging, re
+import xmltodict, json, requests, time, logging, re, os
+from dotenv import load_dotenv
 import xml.etree.ElementTree as ET
 
 # Variables
-version = "1.2"
+version = "2.0"
+load_dotenv()
 
 # Logging configuration
-logging.basicConfig(filename='/var/log/bgg.log', encoding='utf-8', level=logging.DEBUG, format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p')
+logging.basicConfig(filename=os.getenv('LOG_DESTINATION'), encoding='utf-8', level=logging.INFO, format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p')
 logging.info('Using version: '+version)
 class game_info:
     def __init__(self, object_id):
         self.object_id = object_id
-        self.response = requests.get("https://boardgamegeek.com/xmlapi/boardgame/"+self.object_id+"?stats=1") # Get information of game through BGG API
+        self.response = requests.get(os.getenv('BGG_API_URL')+os.getenv('BGG_API_ENDPOINT_BOARDGAME')+"/"+self.object_id+"?stats=1") # Get information of game through BGG API
         self.dictionary = xmltodict.parse(self.response.content) # Parse the XML to Dict
         self.json_object_string = json.dumps(self.dictionary) # Convert to String
         self.json_object = json.loads(self.json_object_string) # Convert JSON to LIST
@@ -100,7 +102,7 @@ class game_info:
 
     def preferred_players(self):
 
-        url = 'https://api.geekdo.com/xmlapi/boardgame/'+str(self.object_id)
+        url = os.getenv('BGG_API_URL')+os.getenv('BGG_API_ENDPOINT_BOARDGAME')+'/'+str(self.object_id)
 
         response = requests.get(url)
         root = ET.fromstring(response.content)
@@ -181,7 +183,7 @@ def update_games(api_url):
 
             # Send information to API
             try:
-                url = "http://zhaho.com/gathering/app/api/"+object_id
+                url = os.getenv('GATHERING_API_URL')+"/"+object_id
                 response = requests.put(url,data=json.dumps(gameJson), headers=headers,timeout=5)
                 if(response.status_code == 200):
                     logging.info(game.title() + ' successfully updated')
@@ -209,4 +211,4 @@ def update_games(api_url):
             logging.info('No games to update')
 
 if __name__ == "__main__":
-    update_games('https://zhaho.com/gathering/app/games/get_obj_without_data')
+    update_games(os.getenv('GATHERING_API_URL_NODATA'))
