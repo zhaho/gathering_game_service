@@ -6,6 +6,7 @@ services:
       context: ./game
     volumes:
       - ./game:/app
+    restart: always
     command: python main.py
   
   mail:
@@ -13,4 +14,5 @@ services:
       context: ./mail
     volumes:
     - ./mail:/app
+    restart: always
     command: python main.py
