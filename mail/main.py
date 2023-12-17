@@ -113,6 +113,5 @@ if __name__ == "__main__":
         if not events:
             logging.info("no upcoming events")
             logging.info("script ended")
-        
-        time.sleep(10)
-        #time.sleep(24.0 * 60.0 * 60.0)
+            
+        time.sleep(24.0 * 60.0 * 60.0)
