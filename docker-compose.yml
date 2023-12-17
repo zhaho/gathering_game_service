@@ -6,4 +6,4 @@ services:
     container_name: gathering_container
     command: python src/main.py
     volumes:
-      - .:/code
+      - .:/app
