@@ -205,10 +205,12 @@ def update_games(api_url):
             logging.info('No data from current game - Skipping')
 
 
-        if len(str(games)) > 2:
-            logging.info('Successfully updated games')
-        else:
-            logging.info('No games to update')
+    if len(str(games)) > 2:
+        logging.info('Successfully updated games')
+    else:
+        logging.info('No games to update')
 
 if __name__ == "__main__":
-    update_games(os.getenv('GATHERING_API_URL_NODATA'))
+    while True:
+        update_games(os.getenv('GATHERING_API_URL_NODATA'))
+        time.sleep(120)

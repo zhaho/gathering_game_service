@@ -2,8 +2,15 @@ version: "3"
 
 services:
   game:
-    build: .
-    container_name: gathering_container
-    command: python src/main.py
+    build: 
+      context: ./game
     volumes:
-      - .:/app
+      - ./game:/app
+    command: python main.py
+  
+  mail:
+    build:
+      context: ./mail
+    volumes:
+    - ./mail:/app
+    command: python main.py
