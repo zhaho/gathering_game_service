@@ -1,14 +1,22 @@
 import xmltodict, json, requests, time, logging, re, os
 from dotenv import load_dotenv
 import xml.etree.ElementTree as ET
+from sys import stdout
 
 # Variables
-version = "2.0"
+version = "2.1"
 load_dotenv()
 
-# Logging configuration
-logging.basicConfig(filename=os.getenv('LOG_DESTINATION'), encoding='utf-8', level=logging.INFO, format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p')
-logging.info('Using version: '+version)
+# Setup Logging
+logger = logging.getLogger()
+logger.setLevel(logging.INFO)
+logFormatter = logging.Formatter\
+("%(name)-12s %(asctime)s %(levelname)-8s %(filename)s:%(funcName)s %(message)s")
+consoleHandler = logging.StreamHandler(stdout) #set streamhandler to stdout
+consoleHandler.setFormatter(logFormatter)
+logger.addHandler(consoleHandler)
+
+logger.info('Using version: '+version)
 class game_info:
     def __init__(self, object_id):
         self.object_id = object_id
@@ -153,7 +161,7 @@ def update_games(api_url):
     games_obj_in_db = requests.get(api_url)
     games = games_obj_in_db.json()
 
-    logging.info('Game that needs update: '+ str(len(games)))
+    logger.info('Game that needs update: '+ str(len(games)))
 
     # Loop the objects in JSON
     for obj in games:
@@ -186,29 +194,29 @@ def update_games(api_url):
                 url = os.getenv('GATHERING_API_URL')+"/"+object_id
                 response = requests.put(url,data=json.dumps(gameJson), headers=headers,timeout=5)
                 if(response.status_code == 200):
-                    logging.info(game.title() + ' successfully updated')
+                    logger.info(game.title() + ' successfully updated')
                 else:
-                    logging.error(game.title() + ' failed to update. status_code: '+str(response.status_code))
+                    logger.error(game.title() + ' failed to update. status_code: '+str(response.status_code))
             except requests.exceptions.HTTPError as errh:
-                logging.error(errh)
+                logger.error(errh)
             except requests.exceptions.ConnectionError as errc:
-                logging.error(errc)
+                logger.error(errc)
             except requests.exceptions.Timeout as errt:
-                logging.error(errt)
+                logger.error(errt)
             except requests.exceptions.RequestException as err:
-                logging.error(err)
+                logger.error(err)
             
             # Wait in order to not overuse the API
             time.sleep(2)
         
         else:
-            logging.info('No data from current game - Skipping')
+            logger.info('No data from current game - Skipping')
 
 
     if len(str(games)) > 2:
-        logging.info('Successfully updated games')
+        logger.info('Successfully updated games')
     else:
-        logging.info('No games to update')
+        logger.info('No games to update')
 
 if __name__ == "__main__":
     while True:

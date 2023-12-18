@@ -3,15 +3,23 @@ from dotenv import load_dotenv
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from datetime import datetime, timedelta
+from sys import stdout
 
 version = "2.2"
 day_limit = 2  # Limit for when to start send email
 load_dotenv()
 
-# Logging configuration
-logging.basicConfig(filename=os.getenv('LOG_DESTINATION'), encoding='utf-8', level=logging.INFO, format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p')
-logging.info('script running')
-logging.info('using version: '+version)
+# Setup Logging
+logger = logging.getLogger()
+logger.setLevel(logging.INFO)
+logFormatter = logging.Formatter\
+("%(name)-12s %(asctime)s %(levelname)-8s %(filename)s:%(funcName)s %(message)s")
+consoleHandler = logging.StreamHandler(stdout) #set streamhandler to stdout
+consoleHandler.setFormatter(logFormatter)
+logger.addHandler(consoleHandler)
+
+logger.info('script running')
+logger.info('using version: '+version)
 
 def send_mail(to, subject, body):
     msg = MIMEMultipart('alternative')
@@ -32,7 +40,7 @@ def get_api_data(endpoint):
     return req.json()
 
 def process_event(event, day_limit):
-    logging.info("processing event: "+ event['id'])
+    logger.info("processing event: "+ event['id'])
     mail_games, mail_users = {}, {}
 
     event_start = event['date_start'].split(" ")[0]
@@ -41,7 +49,7 @@ def process_event(event, day_limit):
     difference = variable_date - current_date
 
     if difference < timedelta(days=day_limit):
-        logging.info(f"- < {day_limit} days")
+        logger.info(f"- < {day_limit} days")
         signups = get_api_data(os.getenv('API_ENDPOINT_LIST_GET_EVENT_SIGNUPS') + f"/{event['id']}")
         users = get_api_data(os.getenv('API_ENDPOINT_LIST_USERS'))
 
@@ -54,14 +62,14 @@ def process_event(event, day_limit):
                     mail_users[user['email']] = user['firstname']
 
         if mail_users:
-            logging.info(f"- title: '{event['title']}'")
-            logging.info(f"- users: {len(mail_users)}")
-            logging.info(f"- games: {str(mail_games)}")
+            logger.info(f"- title: '{event['title']}'")
+            logger.info(f"- users: {len(mail_users)}")
+            logger.info(f"- games: {str(mail_games)}")
         else:
-            logging.info("- no users signed - skip")
+            logger.info("- no users signed - skip")
 
     else:
-        logging.info('- > '+str(day_limit) +' days')
+        logger.info('- > '+str(day_limit) +' days')
 
     for mail, usr in mail_users.items():
         subject = "Gathering: Upcoming Event!"
@@ -102,7 +110,7 @@ def process_event(event, day_limit):
             """
 
         send_mail(to=mail, subject=subject, body=body)
-        logging.info(f"- sent mail to: {mail}")
+        logger.info(f"- sent mail to: {mail}")
 
 if __name__ == "__main__":
     while True:
@@ -111,7 +119,7 @@ if __name__ == "__main__":
         for event in events:
             process_event(event, day_limit)
         if not events:
-            logging.info("no upcoming events")
-            logging.info("script ended")
+            logger.info("no upcoming events")
+            logger.info("script ended")
             
         time.sleep(24.0 * 60.0 * 60.0)
