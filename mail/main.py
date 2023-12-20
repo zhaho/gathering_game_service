@@ -5,21 +5,25 @@ from email.mime.text import MIMEText
 from datetime import datetime, timedelta
 from sys import stdout
 
-version = "2.2"
+version = "2.3"
 day_limit = 2  # Limit for when to start send email
 load_dotenv()
+
+# Constants
+LOG_FORMAT = "%(name)-12s %(asctime)s %(levelname)-8s %(filename)s:%(funcName)s %(message)s"
 
 # Setup Logging
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
-logFormatter = logging.Formatter\
-("%(name)-12s %(asctime)s %(levelname)-8s %(filename)s:%(funcName)s %(message)s")
-consoleHandler = logging.StreamHandler(stdout) #set streamhandler to stdout
-consoleHandler.setFormatter(logFormatter)
+
+# Console Handler
+consoleHandler = logging.StreamHandler()
+consoleHandler.setFormatter(logging.Formatter(LOG_FORMAT))
 logger.addHandler(consoleHandler)
 
-logger.info('script running')
-logger.info('using version: '+version)
+# Log Messages
+logger.info('Script is running')
+logger.info(f'Using version: {version}')
 
 def send_mail(to, subject, body):
     msg = MIMEMultipart('alternative')

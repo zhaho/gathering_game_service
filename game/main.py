@@ -4,19 +4,25 @@ import xml.etree.ElementTree as ET
 from sys import stdout
 
 # Variables
-version = "2.1"
+version = "2.3"
 load_dotenv()
+
+# Constants
+LOG_FORMAT = "%(name)-12s %(asctime)s %(levelname)-8s %(filename)s:%(funcName)s %(message)s"
 
 # Setup Logging
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
-logFormatter = logging.Formatter\
-("%(name)-12s %(asctime)s %(levelname)-8s %(filename)s:%(funcName)s %(message)s")
-consoleHandler = logging.StreamHandler(stdout) #set streamhandler to stdout
-consoleHandler.setFormatter(logFormatter)
+
+# Console Handler
+consoleHandler = logging.StreamHandler()
+consoleHandler.setFormatter(logging.Formatter(LOG_FORMAT))
 logger.addHandler(consoleHandler)
 
-logger.info('Using version: '+version)
+# Log Messages
+logger.info('Script is running')
+logger.info(f'Using version: {version}')
+
 class game_info:
     def __init__(self, object_id):
         self.object_id = object_id
