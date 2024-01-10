@@ -26,10 +26,7 @@ logger.info('Script is running')
 
 def json_array(api_url,endpoint):
     cat_list = []
-    logger.info("retrieving json array")
-
     url = api_url + endpoint
-    print(url)
     req = requests.get(url)
     json_array = req.content
     
@@ -82,28 +79,46 @@ def list_users():
     
     return json_array
 
+def post_data_to_api(user_id, object_id):
+    api_url = os.getenv("GATHERING_API_RECOM_URL")+os.getenv("GATHERING_API_RECOM_ENDPOINT_POST")
+
+    # Create the request body
+    request_body = {
+        "user_id": int(user_id),
+        "object_id": int(object_id)
+    }
+
+    try:
+        # Make the POST request
+        response = requests.post(api_url, json=request_body)
+        time.sleep(1)
+        # Check if the request was successful (status code 2xx)
+        if response.status_code // 100 != 2:
+            logger.error("error posting data: "+response.text)
+
+    except requests.exceptions.RequestException as e:
+        logger.error("error making request:"+e)
+
 if __name__ == "__main__":
     while True:
         
         users = json.loads(list_users())
         for user in users:
+            user_id = user["id"]
             logger.info("get data for user "+user["id"])
             cats_array = json_array(api_url = os.getenv("GATHERING_API_URL"), endpoint = os.getenv("GATHERING_API_USERS_ENDPOINT")+"/"+user["id"])
             user_cats_array = json.loads(cats_array)
-            #print(user_cats_array)
+
             # If enough games in collection
             if len(user_cats_array) > games_in_collection_required:
+                logger.info("enough games found - proceed")
                 top_user_cats = get_top_user_cats(json_data=user_cats_array,top_amount=top_categories_amount)
                 result = filter_objects_by_categories(json_array(api_url = os.getenv("GATHERING_API_URL"), endpoint = os.getenv("GATHERING_API_ENDPOINT")), top_user_cats)
-                print("Games for this user is these:",result)
             
-            #print(get_user_categories(user_cats_array))
-            # unique the array with top cats
-            # user filter function and use the top cats along with the total data
-            
-        
-        
-        #result = filter_objects_by_categories(json_array(api_url = os.getenv("GATHERING_API_URL"), endpoint = os.getenv("GATHERING_API_ENDPOINT")), ['Card Game', 'Number', 'Fantasy'])
-        #print("Object IDs with specified categories:", result)
+                for item in result:
+                    post_data_to_api(user_id=user_id,object_id=item)
+            else:
+                logger.info("not enough games in collection - skip")
+
         time.sleep(86400)
     
