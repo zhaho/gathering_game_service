@@ -6,7 +6,7 @@ from datetime import datetime, timedelta
 from sys import stdout
 
 version = "2.3"
-day_limit = 2  # Limit for when to start send email
+day_limit = 3  # Limit for when to start send email
 load_dotenv()
 
 # Constants
@@ -52,7 +52,7 @@ def process_event(event, day_limit):
     current_date = datetime.now()
     difference = variable_date - current_date
 
-    if difference < timedelta(days=day_limit):
+    if difference < timedelta(days=day_limit) and difference > timedelta(days=1):
         logger.info(f"- < {day_limit} days")
         signups = get_api_data(os.getenv('API_ENDPOINT_LIST_GET_EVENT_SIGNUPS') + f"/{event['id']}")
         users = get_api_data(os.getenv('API_ENDPOINT_LIST_USERS'))

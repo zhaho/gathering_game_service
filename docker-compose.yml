@@ -1,6 +1,13 @@
 version: "3"
 
 services:
+  recom:
+    build:
+      context: ./recom
+    volumes:
+      - ./recom:/app
+    restart: always
+    command: python main.py
   game:
     build: 
       context: ./game
