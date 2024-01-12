@@ -99,8 +99,23 @@ def post_data_to_api(user_id, object_id):
     except requests.exceptions.RequestException as e:
         logger.error("error making request:"+e)
 
+
+def truncate_recom_table():
+    api_url = os.getenv("GATHERING_TRUNCATE_URL")+os.getenv("GATHERING_TRUNCATE_TOKEN")
+    print(api_url)
+    # Make the POST request
+    response = requests.post(api_url)
+
+    if response.status_code == 200:
+        logger.info("recom table truncated")
+    else:
+        logger.info("fail to truncate recom table")
+
 if __name__ == "__main__":
     while True:
+
+        # Empty the table of recommendations
+        truncate_recom_table()
         
         users = json.loads(list_users())
         for user in users:
