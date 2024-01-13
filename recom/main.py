@@ -1,4 +1,4 @@
-import xmltodict, json, requests, time, logging, re, os
+import xmltodict, json, requests, time, logging, re, os, random
 from collections import Counter
 from dotenv import load_dotenv
 import xml.etree.ElementTree as ET
@@ -24,13 +24,13 @@ logger.addHandler(consoleHandler)
 # Log Message
 logger.info('Script is running')
 
-def json_array(api_url,endpoint):
+def get_json_data(api_url,endpoint):
     cat_list = []
     url = api_url + endpoint
     req = requests.get(url)
     json_array = req.content
     
-    return json_array
+    return json.loads(json_array)
 
 def get_top_user_cats(json_data,top_amount):
     # Extract categories and count their occurrences
@@ -47,24 +47,30 @@ def get_top_user_cats(json_data,top_amount):
     return result_categories
 
 
+
 def filter_objects_by_categories(json_array, target_categories):
     # Load the JSON data
-    data = json.loads(json_array)
+    data = json_array
 
-    # Split categories in each item and create a set of unique categories
-    all_categories = set()
+    # Find the object_ids that have the specified categories and count the matches
+    matches_count = {}
     for item in data:
         categories = item['category'].split(', ')
-        all_categories.update(categories)
+        common_categories = [category for category in categories if category in target_categories]
+        num_matches = len(common_categories)
+        if num_matches > 0:
+            matches_count[item['object_id'],num_matches] = {'count': num_matches, 'categories': common_categories}
 
-    # Find the object_ids that have the specified categories
-    result_object_ids = []
-    for item in data:
-        categories = item['category'].split(', ')
-        if any(category in target_categories for category in categories):
-            result_object_ids.append(item['object_id'])
+    # Sort the results based on the number of matches
+    sorted_matches = sorted(matches_count.items(), key=lambda x: x[1]['count'], reverse=True)
 
-    return result_object_ids[:30]
+    # Extract the object_ids from the sorted matches
+    result_object_ids = [obj_id for obj_id, _ in sorted_matches]
+    print("test",result_object_ids[:10])
+
+    games = result_object_ids[:500]  # You can adjust the number of results as needed
+
+    return games
 
 def list_users():
     cat_list = []
@@ -77,16 +83,21 @@ def list_users():
     req = requests.get(url)
     json_array = req.content
     
-    return json_array
+    return json.loads(json_array)
 
-def post_data_to_api(user_id, object_id):
+def post_data_to_api(user_id, game):
     api_url = os.getenv("GATHERING_API_RECOM_URL")+os.getenv("GATHERING_API_RECOM_ENDPOINT_POST")
 
     # Create the request body
+    # print(game)
+    # print(game[0],game[1])
     request_body = {
         "user_id": int(user_id),
-        "object_id": int(object_id)
+        "object_id": int(game[0]),
+        "matches": int(game[1])
     }
+
+    print(request_body)
 
     try:
         # Make the POST request
@@ -102,7 +113,7 @@ def post_data_to_api(user_id, object_id):
 
 def truncate_recom_table():
     api_url = os.getenv("GATHERING_TRUNCATE_URL")+os.getenv("GATHERING_TRUNCATE_TOKEN")
-    print(api_url)
+    # print(api_url)
     # Make the POST request
     response = requests.post(api_url)
 
@@ -117,21 +128,22 @@ if __name__ == "__main__":
         # Empty the table of recommendations
         truncate_recom_table()
         
-        users = json.loads(list_users())
+        # Retrieve users
+        users = list_users()
+
         for user in users:
-            user_id = user["id"]
             logger.info("get data for user "+user["id"])
-            cats_array = json_array(api_url = os.getenv("GATHERING_API_URL"), endpoint = os.getenv("GATHERING_API_USERS_ENDPOINT")+"/"+user["id"])
-            user_cats_array = json.loads(cats_array)
+            categories = get_json_data(api_url = os.getenv("GATHERING_API_URL"), endpoint = os.getenv("GATHERING_API_USERS_ENDPOINT")+"/"+user["id"])
+            user_cats_array = categories
 
             # If enough games in collection
             if len(user_cats_array) > games_in_collection_required:
                 logger.info("enough games found - proceed")
                 top_user_cats = get_top_user_cats(json_data=user_cats_array,top_amount=top_categories_amount)
-                result = filter_objects_by_categories(json_array(api_url = os.getenv("GATHERING_API_URL"), endpoint = os.getenv("GATHERING_API_ENDPOINT")), top_user_cats)
-            
-                for item in result:
-                    post_data_to_api(user_id=user_id,object_id=item)
+                games = filter_objects_by_categories(get_json_data(api_url = os.getenv("GATHERING_API_URL"), endpoint = os.getenv("GATHERING_API_ENDPOINT")), top_user_cats)
+
+                for item in games:
+                    post_data_to_api(user_id=user["id"],game=item)
             else:
                 logger.info("not enough games in collection - skip")
 

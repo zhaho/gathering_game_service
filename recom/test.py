@@ -15,6 +15,6 @@ def get_top_user_cats(json_data,top_amount):
     top_10_categories = category_counts.most_common(top_amount)
 
     for category, count in top_10_categories:
-        print(f"{category}")
+        print(f"{category} {count}")
 
 get_top_user_cats(json_data,5)
