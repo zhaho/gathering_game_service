@@ -66,9 +66,8 @@ def filter_objects_by_categories(json_array, target_categories):
 
     # Extract the object_ids from the sorted matches
     result_object_ids = [obj_id for obj_id, _ in sorted_matches]
-    print("test",result_object_ids[:10])
 
-    games = result_object_ids[:500]  # You can adjust the number of results as needed
+    games = result_object_ids[:50]  # You can adjust the number of results as needed
 
     return games
 
