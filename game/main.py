@@ -83,19 +83,19 @@ class game_info:
         return int(float(self.json_object['boardgames']['boardgame']['statistics']['ratings']['usersrated']))
 
     def year_published(self):
-        return self.json_object['boardgames']['boardgame']['yearpublished']
+        return int(self.json_object['boardgames']['boardgame']['yearpublished'])
     
     def minplayers(self):
-        return self.json_object['boardgames']['boardgame']['minplayers']
+        return int(self.json_object['boardgames']['boardgame']['minplayers'])
     
     def maxplayers(self):
-        return self.json_object['boardgames']['boardgame']['maxplayers']
+        return int(self.json_object['boardgames']['boardgame']['maxplayers'])
     
     def playtime(self):
-        return self.json_object['boardgames']['boardgame']['playingtime']
+        return int(self.json_object['boardgames']['boardgame']['playingtime'])
 
     def age(self):
-        return self.json_object['boardgames']['boardgame']['age']
+        return int(self.json_object['boardgames']['boardgame']['age'])
     
     def description(self):
         return self.json_object['boardgames']['boardgame']['description']
@@ -175,7 +175,6 @@ def update_games(api_url):
         object_id = obj['object_id']
 
         if game.is_valid():
-
 
             # Prepare JSON Payload
             gameJson = {
