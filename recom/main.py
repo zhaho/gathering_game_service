@@ -33,8 +33,12 @@ def get_json_data(api_url,endpoint):
     return json.loads(json_array)
 
 def get_top_user_cats(json_data,top_amount):
+    
     # Extract categories and count their occurrences
-    categories = [category.strip() for entry in json_data for category in entry["category"].split(", ")]
+    try:
+        categories = [category.strip() for entry in json_data for category in entry["category"].split(", ")]
+    except:
+        print(json_data)
     category_counts = Counter(categories)
 
     # Get top 10 categories
@@ -88,15 +92,11 @@ def post_data_to_api(user_id, game):
     api_url = os.getenv("GATHERING_API_RECOM_URL")+os.getenv("GATHERING_API_RECOM_ENDPOINT_POST")
 
     # Create the request body
-    # print(game)
-    # print(game[0],game[1])
     request_body = {
         "user_id": int(user_id),
         "object_id": int(game[0]),
         "matches": int(game[1])
     }
-
-    print(request_body)
 
     try:
         # Make the POST request
@@ -112,7 +112,7 @@ def post_data_to_api(user_id, game):
 
 def truncate_recom_table():
     api_url = os.getenv("GATHERING_TRUNCATE_URL")+os.getenv("GATHERING_TRUNCATE_TOKEN")
-    # print(api_url)
+
     # Make the POST request
     response = requests.post(api_url)
 
@@ -143,6 +143,7 @@ if __name__ == "__main__":
 
                 for item in games:
                     post_data_to_api(user_id=user["id"],game=item)
+                logger.info("all games for",user["id"],"processed")
             else:
                 logger.info("not enough games in collection - skip")
 
