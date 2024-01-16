@@ -192,11 +192,12 @@ def update_games(api_url):
     games = games_obj_in_db.json()
 
     logger.info('Game that needs update: '+ str(len(games)))
-
+    game_count = 1
     # Loop the objects in JSON
     for obj in games:
         game = game_info(obj['object_id'])
         object_id = obj['object_id']
+        logger.info('# '+str(game_count)+'/'+ str(len(games)))
 
         if game.is_valid():
 
@@ -239,10 +240,11 @@ def update_games(api_url):
             
             # Wait in order to not overuse the API
             time.sleep(2)
-        
+
         else:
             logger.info('No data from current game - Skipping')
 
+        game_count += 1    
 
     if len(str(games)) > 2:
         logger.info('Successfully updated games')
