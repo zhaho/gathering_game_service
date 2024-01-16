@@ -1,11 +1,13 @@
 from main import game_info
 
-#game = game_info("63706")
-game = game_info("116954")
+game = game_info("186831")
+#game = game_info("116954")
+#game = game_info("313476")
 
-print("\nValidating game: " + game.title())
-print("\nCategories: "+game.category())
-print("\nMechanics: "+game.mechanic())
+print("\nValidating game: ",game.title())
+print("\nCategories: ",game.category())
+print("\nMechanics: ",game.mechanic())
+print("\nExpansion: ",game.expansion())
 
 def test_valid():
     assert game.is_valid() == True
@@ -26,4 +28,5 @@ def test_bgg_rating():
     assert len(str(game.bgg_rating())) > 0
     assert type(game.bgg_rating()) == int
 
-
+def test_expansion():
+    assert type(game.expansion()) == int

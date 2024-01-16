@@ -30,6 +30,7 @@ class game_info:
         self.dictionary = xmltodict.parse(self.response.content) # Parse the XML to Dict
         self.json_object_string = json.dumps(self.dictionary) # Convert to String
         self.json_object = json.loads(self.json_object_string) # Convert JSON to LIST
+        logger.info(object_id)
        
     def title(self):
         title_object = self.json_object['boardgames']['boardgame']['name']
@@ -45,6 +46,29 @@ class game_info:
                 title = obj['#text']
         
         return title
+
+    def expansion(self):
+        # If Expansion for Base-game in categories, then expansion update
+        if 'boardgamecategory' in  self.json_object['boardgames']['boardgame']:
+            category_object = self.json_object['boardgames']['boardgame']['boardgamecategory']
+            for obj in category_object:
+                try:
+                    is_expansion = obj['#text'] == 'Expansion for Base-game'
+                except:
+                    is_expansion = self.json_object['boardgames']['boardgame']['boardgamecategory']['#text']
+                if is_expansion:
+                    if 'boardgameexpansion' in  self.json_object['boardgames']['boardgame']:
+                        exp_obj = self.json_object['boardgames']['boardgame']['boardgameexpansion']
+                        if isinstance(exp_obj, list):
+                            for item in exp_obj:
+                                if '@objectid' in item:
+                                    return int(item['@objectid'])
+                        else:    
+                            return int(exp_obj['@objectid'])
+                    else:
+                        return 0
+                return 0
+        return 0
 
     def category(self):
         # Sets the category
@@ -183,6 +207,7 @@ def update_games(api_url):
                     "category": game.category(),
                     "mechanic": game.mechanic(),
                     "title": game.title(),
+                    "expansion_to": game.expansion(),
                     "year_published": game.year_published(),
                     "minplayers": game.minplayers(),
                     "maxplayers": game.maxplayers(),
@@ -193,8 +218,9 @@ def update_games(api_url):
                     "thumbnail_url": game.thumbnail(),
                     "image_url": game.image()
                     }
+            
+            #Send information to API
 
-            # Send information to API
             try:
                 url = os.getenv('GATHERING_API_URL')+"/"+object_id
                 response = requests.put(url,data=json.dumps(gameJson), headers=headers,timeout=5)
