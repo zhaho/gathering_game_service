@@ -227,3 +227,4 @@ if __name__ == "__main__":
     while True:
         update_games(os.getenv('GATHERING_API_URL_NODATA'))
         time.sleep(120)
+        logger.info('wait done - check again')
