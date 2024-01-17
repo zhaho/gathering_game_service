@@ -113,17 +113,29 @@ class game_info:
             return 0
     
     def minplayers(self):
-        return int(self.json_object['boardgames']['boardgame']['minplayers'])
-    
+        if self.json_object['boardgames']['boardgame']['minplayers'] is not None:
+            return int(self.json_object['boardgames']['boardgame']['minplayers'])
+        else:
+            return 0
+        
     def maxplayers(self):
-        return int(self.json_object['boardgames']['boardgame']['maxplayers'])
-    
+        if self.json_object['boardgames']['boardgame']['maxplayers'] is not None:
+            return int(self.json_object['boardgames']['boardgame']['maxplayers'])
+        else:
+            return 0
+        
     def playtime(self):
-        return int(self.json_object['boardgames']['boardgame']['playingtime'])
-
+        if self.json_object['boardgames']['boardgame']['playingtime'] is not None:
+            return int(self.json_object['boardgames']['boardgame']['playingtime'])
+        else:
+            return 0
+        
     def age(self):
-        return int(self.json_object['boardgames']['boardgame']['age'])
-    
+        if self.json_object['boardgames']['boardgame']['age'] is not None:
+            return int(self.json_object['boardgames']['boardgame']['age'])
+        else:
+            return 0
+        
     def description(self):
         return self.json_object['boardgames']['boardgame']['description']
 
