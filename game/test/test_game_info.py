@@ -1,13 +1,14 @@
 from main import game_info
 
-game = game_info("186831")
-#game = game_info("116954")
+#game = game_info("313476")
+game = game_info("116954")
 #game = game_info("313476")
 
 print("\nValidating game: ",game.title())
 print("\nCategories: ",game.category())
 print("\nMechanics: ",game.mechanic())
 print("\nExpansion: ",game.expansion())
+print("\nYear Published: ",game.year_published())
 
 def test_valid():
     assert game.is_valid() == True

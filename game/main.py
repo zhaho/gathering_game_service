@@ -107,7 +107,10 @@ class game_info:
         return int(float(self.json_object['boardgames']['boardgame']['statistics']['ratings']['usersrated']))
 
     def year_published(self):
-        return int(self.json_object['boardgames']['boardgame']['yearpublished'])
+        if self.json_object['boardgames']['boardgame']['yearpublished'] is not None:
+            return int(self.json_object['boardgames']['boardgame']['yearpublished'])
+        else:
+            return 0
     
     def minplayers(self):
         return int(self.json_object['boardgames']['boardgame']['minplayers'])
