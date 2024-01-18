@@ -2,9 +2,10 @@ import xmltodict, json, requests, time, logging, re, os
 from dotenv import load_dotenv
 import xml.etree.ElementTree as ET
 from sys import stdout
+from lookup import price_lookup
 
 # Variables
-version = "2.3"
+version = "3.0"
 load_dotenv()
 
 # Constants
@@ -234,6 +235,8 @@ def update_games(api_url):
                     "image_url": game.image()
                     }
             
+            logger.info(price_lookup.game_title(game.title()))
+
             #Send information to API
 
             try:

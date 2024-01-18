@@ -143,7 +143,7 @@ if __name__ == "__main__":
 
                 for item in games:
                     post_data_to_api(user_id=user["id"],game=item)
-                logger.info("all games for",user["id"],"processed")
+                logger.info("all games for "+user["id"]+" processed")
             else:
                 logger.info("not enough games in collection - skip")
 
