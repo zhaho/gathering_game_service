@@ -230,12 +230,11 @@ def update_games(api_url):
                     "preferred_players": game.preferred_players(),
                     "playtime": game.playtime(),
                     "age": game.age(),
+                    "estimated_price": price_lookup.game_title(game.title()),
                     "description": game.description(),
                     "thumbnail_url": game.thumbnail(),
                     "image_url": game.image()
                     }
-            
-            logger.info(price_lookup.game_title(game.title()))
 
             #Send information to API
 
