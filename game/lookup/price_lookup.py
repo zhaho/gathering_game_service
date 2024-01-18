@@ -32,7 +32,16 @@ def game_title(game_title):
         if item_div:
             price_element = item_div.find('span', class_='price')
             if price_element:
-                price = price_element.text.strip()[4:].replace(",",".")
-                return round(int(float(price)))
+                price = price_element.text.strip()[4:]
+                
+                # Split the price by comma
+                price_parts = price.split(',')
+                price = ''.join(price_parts[:1])
+
+                # Split the price string by dots
+                price_parts = price.split('.')
+                price = ''.join(price_parts[:2])
+                
+                return int(price)
 
     return None
