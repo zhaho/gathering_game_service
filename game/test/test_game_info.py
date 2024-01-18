@@ -1,8 +1,8 @@
 from main import game_info
 
-game = game_info("313476")
+#game = game_info("288841")
 #game = game_info("116954")
-#game = game_info("313476")
+game = game_info("313476")
 
 print("\nValidating game: ",game.title())
 print("\nCategories: ",game.category())

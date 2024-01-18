@@ -55,7 +55,7 @@ class game_info:
                 try:
                     is_expansion = obj['#text'] == 'Expansion for Base-game'
                 except:
-                    is_expansion = self.json_object['boardgames']['boardgame']['boardgamecategory']['#text']
+                    is_expansion = False
                 if is_expansion:
                     if 'boardgameexpansion' in  self.json_object['boardgames']['boardgame']:
                         exp_obj = self.json_object['boardgames']['boardgame']['boardgameexpansion']
@@ -67,7 +67,6 @@ class game_info:
                             return int(exp_obj['@objectid'])
                     else:
                         return 0
-                return 0
         return 0
 
     def category(self):
