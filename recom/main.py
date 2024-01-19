@@ -98,6 +98,7 @@ def post_data_to_api(user_id, game):
         "matches": int(game[1])
     }
 
+    print(request_body)
     try:
         # Make the POST request
         response = requests.post(api_url, json=request_body)
