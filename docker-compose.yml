@@ -1,3 +1,4 @@
+---
 version: "3"
 
 services:
@@ -8,19 +9,19 @@ services:
       - ./recom:/app
     restart: always
     command: python main.py
-    
+
   game:
-    build: 
+    build:
       context: ./game
     volumes:
       - ./game:/app
     restart: always
     command: python main.py
-  
+
   mail:
     build:
       context: ./mail
     volumes:
-    - ./mail:/app
+      - ./mail:/app
     restart: always
     command: python main.py
