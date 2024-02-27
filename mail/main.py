@@ -80,13 +80,15 @@ def process_event(event, day_limit):
         mail_games_body = ""
 
         for attender, games in mail_games.items():
-            mail_games_body += f"{attender}'s games:<br>"
+            if games:
+                mail_games_body += f"{attender}'s games:<br>"
 
-            for game in games:
-                mail_games_body += f"- {game}<br>"
-            if not games:
-                mail_games_body += f"- No games at the moment<br>"
+                for game in games:
+                    mail_games_body += f"- {game}<br>"
 
+        if len(mail_games_body) == 0:
+            mail_games_body = "-"
+                
         body = f"""\
             <html>
             <head></head>
