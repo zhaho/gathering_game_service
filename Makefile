@@ -19,3 +19,5 @@ start:
 	docker-compose -f docker-compose.yml start $(c)
 stop:
 	docker-compose -f docker-compose.yml stop $(c)
+test:
+	pytest game/test/ -vvv
