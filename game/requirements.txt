@@ -1,5 +1,0 @@
-pandas
-requests
-python-dotenv
-pytest
-beautifulsoup4

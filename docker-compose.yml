@@ -10,14 +10,6 @@ services:
     restart: always
     command: python main.py
 
-  game:
-    build:
-      context: ./game
-    volumes:
-      - ./game:/app
-    restart: always
-    command: python main.py
-
   mail:
     build:
       context: ./mail
